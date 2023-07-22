@@ -15,7 +15,7 @@ def before1day(){
     return sdf.format(before1day)
 }
 def getLogGroups() {
-    LOG_GROUP = sh (
+    LOG_GROUP = bat (
     script: "aws logs describe-log-groups --region us-east-1 --output text|awk '{print \$4}'",
     returnStdout: true
     ).trim().toString()
@@ -23,7 +23,7 @@ def getLogGroups() {
     return LOG_GROUP
 }
 def getLogStream(log) {
-    LOG_STREAM = sh (
+    LOG_STREAM = bat (
     script: "aws logs describe-log-streams --log-group-name ${log} --region us-east-1 --output text |awk '{print \$7}'",
     returnStdout: true
     ).trim().toString()
@@ -87,12 +87,12 @@ choice(choices: getLogStream("${env.LOG_GROUP}"),
         }
         stage("List Logs") {
          steps {
-                sh "python3.7 /var/jenkins_home/log.py ${env.LOG_GROUP} --start=${env.START_TIME} --end=${env.END_TIME} --log-stream-names=${MY_LOG_STREAM}  --filter-pattern=${env.PATTERN} > generatedLog.txt"
+                bat "python3.7 /var/jenkins_home/log.py ${env.LOG_GROUP} --start=${env.START_TIME} --end=${env.END_TIME} --log-stream-names=${MY_LOG_STREAM}  --filter-pattern=${env.PATTERN} > generatedLog.txt"
                 echo "\n\n\n+++++++++++++++++++++++++++++++++++++++++++++++"
                 echo "+++++++++++++++++++++++++++++++++++++++++++++++++"
                 echo "+++++++++++++++++++++++++++++++++++++++++++++++++"
                 echo "Sample Log"
-                sh "tail -n 30 generatedLog.txt"
+                bat "tail -n 30 generatedLog.txt"
                 echo "\n\n\n+++++++++++++++++++++++++++++++++++++++++++++++"
                 echo "+++++++++++++++++++++++++++++++++++++++++++++++++"
                 echo "+++++++++++++++++++++++++++++++++++++++++++++++++"
